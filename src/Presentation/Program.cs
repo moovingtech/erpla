@@ -9,6 +9,7 @@ using System.Security.Claims;
 using System.Text;
 using Presentation.Extensions;
 using Core.Domain;
+using Presentacion.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services
@@ -47,9 +48,22 @@ builder.Services.AddSwaggerGen(c =>
 
 
 var app = builder.Build();
-app.UseAuthentication();
-app.UseAuthorization();
-app.MapControllers();
+
+// configure HTTP request pipeline
+{
+    // global cors policy
+    // ToDo: set CORS to Dev only.
+    app.UseCors(x => x
+        .AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader());
+
+    app.UseAuthentication();
+    app.UseAuthorization();
+    app.UseMiddleware<ErrorHandlerMiddleware>();
+
+    app.MapControllers();
+}
 
 if (app.Environment.IsDevelopment())
 {

@@ -10,6 +10,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Core.Domain;
+using Core.Application.Service;
 
 namespace Presentation.Controllers
 {
@@ -94,11 +95,40 @@ namespace Presentation.Controllers
                 signingCredentials: credentials);
 
             var jwt = new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
-
+            var refreshToken = JwtUtils.GenerateRefreshToken(ipAddress());
+            setTokenCookie(refreshToken.Token);
             return Ok(new
             {
                 AccessToken = jwt
             });
+        }
+
+        [HttpPost("refresh-token")]
+        public IActionResult RefreshToken()
+        {
+            var refreshToken = Request.Cookies["refreshToken"];
+            var response = _userService.RefreshToken(refreshToken, ipAddress());
+            setTokenCookie(response.RefreshToken);
+            return Ok(response);
+        }
+
+        private void setTokenCookie(string token)
+        {
+            // append cookie with refresh token to the http response
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = DateTime.UtcNow.AddDays(7)
+            };
+            Response.Cookies.Append("refreshToken", token, cookieOptions);
+        }
+        private string ipAddress()
+        {
+            // get source ip address for the current request
+            if (Request.Headers.ContainsKey("X-Forwarded-For"))
+                return Request.Headers["X-Forwarded-For"];
+            else
+                return HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
         }
     }
 }
