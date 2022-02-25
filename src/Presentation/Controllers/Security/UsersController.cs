@@ -13,42 +13,37 @@ using Microsoft.AspNetCore.Authorization;
 using Core.Domain;
 using Core.Application.Service;
 
-namespace Presentation.Controllers
+namespace Presentation.Controllers.Security
 {
     [Route("api/users")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     public class UsersController : ControllerBase
     {
         //private readonly UserManager<User> userManager;
         //private readonly RoleManager<IdentityRole> roleManager;
         //private readonly IConfiguration _configuration;
-        private readonly UserService _userService;  
+        private readonly UserService _userService;
 
         public UsersController(UserService userService)
         {
-            this._userService = userService;
+            _userService = userService;
         }
-        //public UsersController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
-        //{
-        //    this.userManager = userManager;
-        //    this.roleManager = roleManager;
-        //    _configuration = configuration;
-        //}
 
         [HttpGet]
         [Route("")]
+        //[Authorize("ViewUsers")]
         public IActionResult GetAll()
         {
-            var users = _userService.GetAll();
-            return Ok( users);
+            var users =  _userService.GetAll();
+            return Ok(users);
         }
 
         [HttpGet]
         [Route("{id}")]
         public async Task<IActionResult> GetById(string Id)
         {
-            var user = _userService.FindByIdAsync(Id);
+            var user = await _userService.FindByIdAsync(Id);
             return Ok(user);
         }
 

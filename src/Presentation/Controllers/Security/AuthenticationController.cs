@@ -11,6 +11,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Core.Domain;
 using Core.Application.Service;
+using Core.Security.Domain.Entities;
 
 namespace Presentation.Controllers
 {
@@ -18,22 +19,25 @@ namespace Presentation.Controllers
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
-        private readonly UserManager<User> userManager;
-        private readonly RoleManager<IdentityRole> roleManager;
+        private readonly UserManager<User> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly AuthenticationService _authenticationService;
         private readonly IConfiguration _configuration;
 
-        public AuthenticationController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+        public AuthenticationController(AuthenticationService authenticationService, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
         {
-            this.userManager = userManager;
-            this.roleManager = roleManager;
-            _configuration = configuration;
+            this._userManager = userManager;
+            this._roleManager = roleManager;
+            this._authenticationService = authenticationService;
+            this._configuration = configuration;
         }
+
         [HttpGet]
         [Route("seed")]
         [Authorize]
         public async Task<IActionResult> Seed()
         {
-            if (!userManager.Users.Any())
+            if (!_userManager.Users.Any())
             {
 
                 var newUser = new User
@@ -44,20 +48,20 @@ namespace Presentation.Controllers
                     UserName = "test.demo"
                 };
 
-                await userManager.CreateAsync(newUser, "P@ss.W0rd");
-                await roleManager.CreateAsync(new IdentityRole
+                await _userManager.CreateAsync(newUser, "P@ss.W0rd");
+                await _roleManager.CreateAsync(new IdentityRole
                 {
                     Name = "Admin"
                 });
-                await roleManager.CreateAsync(new IdentityRole
+                await _roleManager.CreateAsync(new IdentityRole
                 {
                     Name = "AnotherRole"
                 });
 
-                await userManager.AddToRoleAsync(newUser, "Admin");
-                await userManager.AddToRoleAsync(newUser, "AnotherRole");
+                await _userManager.AddToRoleAsync(newUser, "Admin");
+                await _userManager.AddToRoleAsync(newUser, "AnotherRole");
             }
-            return Ok("Hello");
+            return Ok("Seeded");
         }
 
         [HttpPost]
@@ -65,14 +69,14 @@ namespace Presentation.Controllers
         public async Task<IActionResult> Login(AuthenticateRequest authenticationRequest)
         {
             // ToDo: Move this code to a service
-            var user = await userManager.FindByNameAsync(authenticationRequest.UserName);
+            var user = await _userManager.FindByNameAsync(authenticationRequest.UserName);
 
-            if (user is null || !await userManager.CheckPasswordAsync(user, authenticationRequest.Password))
+            if (user is null || !await _userManager.CheckPasswordAsync(user, authenticationRequest.Password))
             {
                 return Forbid();
             }
 
-            var roles = await userManager.GetRolesAsync(user);
+            var roles = await _userManager.GetRolesAsync(user);
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Sid, user.Id),
@@ -80,9 +84,15 @@ namespace Presentation.Controllers
                 new Claim(ClaimTypes.GivenName, $"{user.FirstName} {user.LastName}")
             };
 
-            foreach (var role in roles)
+            foreach (var roleName in roles)
             {
-                claims.Add(new Claim(ClaimTypes.Role, role));
+                claims.Add(new Claim(ClaimTypes.Role, roleName));
+                var role = await _roleManager.FindByNameAsync(roleName);
+                var roleClaims = await _roleManager.GetClaimsAsync(role);
+                foreach (var claim in roleClaims)
+                {
+                    claims.Add(new Claim(claim.Type, claim.Value));
+                }
             }
 
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
@@ -93,7 +103,6 @@ namespace Presentation.Controllers
                 claims: claims,
                 expires: DateTime.Now.AddMinutes(720),
                 signingCredentials: credentials);
-
             var jwt = new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
             var refreshToken = JwtUtils.GenerateRefreshToken(ipAddress());
             setTokenCookie(refreshToken.Token);
@@ -103,6 +112,7 @@ namespace Presentation.Controllers
             });
         }
 
+        /*
         [HttpPost("refresh-token")]
         public IActionResult RefreshToken()
         {
@@ -111,6 +121,7 @@ namespace Presentation.Controllers
             setTokenCookie(response.RefreshToken);
             return Ok(response);
         }
+        */
 
         private void setTokenCookie(string token)
         {

@@ -1,4 +1,5 @@
 ﻿using Core.Domain;
+using Core.Security.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;

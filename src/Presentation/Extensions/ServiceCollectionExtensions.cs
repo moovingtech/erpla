@@ -6,6 +6,7 @@ using Infrastructure.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Core.Security.Application.Service;
 
 namespace Presentation.Extensions
 {
@@ -22,22 +23,20 @@ namespace Presentation.Extensions
 
         public static IServiceCollection AddUnitOfWork(this IServiceCollection services)
         {
-            return services
-                .AddScoped<IUnitOfWork, UnitOfWork>();
+            return services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
 
-        public static IServiceCollection AddDatabase(this IServiceCollection services
-            , IConfiguration configuration)
+        public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
         {
             return services.AddDbContext<ErplaDBContext>(options =>
                      options.UseSqlServer(configuration.GetConnectionString("Default")));
         }
 
-        public static IServiceCollection AddBusinessServices(this IServiceCollection services
-           )
+        public static IServiceCollection AddBusinessServices(this IServiceCollection services)
         {
-            return services
-                .AddScoped<UserService>();
+            services.AddScoped<UserService>();
+            services.AddScoped<RoleService>();
+            return services;
         }
     }
 }
