@@ -10,8 +10,9 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Core.Domain;
-using Core.Application.Service;
+using Swashbuckle.AspNetCore.Annotations;
 using Core.Security.Domain.Entities;
+using Core.Application.Service;
 
 namespace Presentation.Controllers
 {
@@ -19,25 +20,25 @@ namespace Presentation.Controllers
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
-        private readonly UserManager<User> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly AuthenticationService _authenticationService;
+        private readonly UserManager<User> userManager;
+        private readonly RoleManager<IdentityRole> roleManager;
         private readonly IConfiguration _configuration;
 
-        public AuthenticationController(AuthenticationService authenticationService, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+        public AuthenticationController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
         {
-            this._userManager = userManager;
-            this._roleManager = roleManager;
-            this._authenticationService = authenticationService;
-            this._configuration = configuration;
+            this.userManager = userManager;
+            this.roleManager = roleManager;
+            _configuration = configuration;
         }
 
         [HttpGet]
         [Route("seed")]
         [Authorize]
+        [SwaggerOperation(Summary = "Usuario Seed",
+                          Description = "Si no existe usuarios resgistrados en el sistema crea un usuario Administrador.")]
         public async Task<IActionResult> Seed()
         {
-            if (!_userManager.Users.Any())
+            if (!userManager.Users.Any())
             {
 
                 var newUser = new User
@@ -48,35 +49,45 @@ namespace Presentation.Controllers
                     UserName = "test.demo"
                 };
 
-                await _userManager.CreateAsync(newUser, "P@ss.W0rd");
-                await _roleManager.CreateAsync(new IdentityRole
+                await userManager.CreateAsync(newUser, "P@ss.W0rd");
+                await roleManager.CreateAsync(new IdentityRole
                 {
                     Name = "Admin"
                 });
-                await _roleManager.CreateAsync(new IdentityRole
+                await roleManager.CreateAsync(new IdentityRole
                 {
                     Name = "AnotherRole"
                 });
 
-                await _userManager.AddToRoleAsync(newUser, "Admin");
-                await _userManager.AddToRoleAsync(newUser, "AnotherRole");
+                await userManager.AddToRoleAsync(newUser, "Admin");
+                await userManager.AddToRoleAsync(newUser, "AnotherRole");
             }
             return Ok("Seeded");
         }
 
         [HttpPost]
         [Route("login")]
+        [SwaggerOperation(Summary = "Usuario Inicio Sesion",
+                          Description = "Crea el token de usuario, valida si el usuario existe y si la password es correcta")]
+        [SwaggerResponse(200, "Datos correctos, token genrado")]
+        [SwaggerResponse(400, "El usuario no se encuentro")]
+        [SwaggerResponse(401, "Password incorrecta")]
         public async Task<IActionResult> Login(AuthenticateRequest authenticationRequest)
         {
             // ToDo: Move this code to a service
-            var user = await _userManager.FindByNameAsync(authenticationRequest.UserName);
+            var user = await userManager.FindByNameAsync(authenticationRequest.UserName);
 
-            if (user is null || !await _userManager.CheckPasswordAsync(user, authenticationRequest.Password))
+            if (user is null)
             {
-                return Forbid();
+                return BadRequest(new Response() { Success = false, Message = "Usuario inválido" });
             }
 
-            var roles = await _userManager.GetRolesAsync(user);
+            if (!await userManager.CheckPasswordAsync(user, authenticationRequest.Password))
+            {
+                return Unauthorized(new Response() { Success = false, Message = "Contraseña incorrecta" });
+            }
+
+            var roles = await userManager.GetRolesAsync(user);
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Sid, user.Id),
@@ -87,8 +98,8 @@ namespace Presentation.Controllers
             foreach (var roleName in roles)
             {
                 claims.Add(new Claim(ClaimTypes.Role, roleName));
-                var role = await _roleManager.FindByNameAsync(roleName);
-                var roleClaims = await _roleManager.GetClaimsAsync(role);
+                var role = await roleManager.FindByNameAsync(roleName);
+                var roleClaims = await roleManager.GetClaimsAsync(role);
                 foreach (var claim in roleClaims)
                 {
                     claims.Add(new Claim(claim.Type, claim.Value));
@@ -106,12 +117,9 @@ namespace Presentation.Controllers
             var jwt = new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
             var refreshToken = JwtUtils.GenerateRefreshToken(ipAddress());
             setTokenCookie(refreshToken.Token);
-            return Ok(new
-            {
-                AccessToken = jwt
-            });
-        }
 
+            return Ok(new Response() { Success = true, Data = jwt });
+        }
         /*
         [HttpPost("refresh-token")]
         public IActionResult RefreshToken()
