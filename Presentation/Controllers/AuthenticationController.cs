@@ -10,6 +10,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Core.Domain;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Presentation.Controllers
 {
@@ -27,9 +28,12 @@ namespace Presentation.Controllers
             this.roleManager = roleManager;
             _configuration = configuration;
         }
+
         [HttpGet]
         [Route("seed")]
         [Authorize]
+        [SwaggerOperation(Summary ="Usuario Seed",
+                          Description ="Si no existe usuarios resgistrados en el sistema crea un usuario Administrador.")]
         public async Task<IActionResult> Seed()
         {
             if (!userManager.Users.Any())
@@ -61,14 +65,24 @@ namespace Presentation.Controllers
 
         [HttpPost]
         [Route("login")]
+        [SwaggerOperation(Summary = "Usuario Inicio Sesion",
+                          Description = "Crea el token de usuario, valida si el usuario existe y si la password es correcta")]
+        [SwaggerResponse(200,"Datos correctos, token genrado")]
+        [SwaggerResponse(400,"El usuario no se encuentro")]
+        [SwaggerResponse(401,"Password incorrecta")]
         public async Task<IActionResult> Login(AuthenticateRequest authenticationRequest)
         {
             // ToDo: Move this code to a service
             var user = await userManager.FindByNameAsync(authenticationRequest.UserName);
 
-            if (user is null || !await userManager.CheckPasswordAsync(user, authenticationRequest.Password))
+            if (user is null)
             {
-                return Forbid();
+                return BadRequest(new Response() { Success = false, Message = "Usuario inválido" });
+            }
+
+            if (!await userManager.CheckPasswordAsync(user, authenticationRequest.Password))
+            {
+                return Unauthorized(new Response() { Success = false, Message = "Contraseña incorrecta" });
             }
 
             var roles = await userManager.GetRolesAsync(user);
@@ -95,10 +109,7 @@ namespace Presentation.Controllers
 
             var jwt = new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
 
-            return Ok(new
-            {
-                AccessToken = jwt
-            });
+            return Ok(new Response() { Success = true, Data = jwt });
         }
     }
 }
