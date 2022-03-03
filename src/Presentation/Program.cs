@@ -56,6 +56,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Api", Version = "v1" });
+    c.EnableAnnotations();
 });
 
 var app = builder.Build();
