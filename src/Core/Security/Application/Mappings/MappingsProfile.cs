@@ -13,9 +13,7 @@ namespace Core.Security.Application.Mappings
     {
         public MappingsProfile()
         {
-            CreateMap<IdentityRole, RoleDto>()
-              .ForMember("Id", opt => opt.MapFrom("Id"))
-              .ForMember("Name", opt => opt.MapFrom("Name"));
+            CreateMap<IdentityRole, RoleDto>();
         }
     }
 }
