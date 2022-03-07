@@ -39,7 +39,7 @@ namespace Presentation.Controllers.Security
         public IActionResult GetAll()
         {
             var users = _userService.GetAll();
-            return Ok(new Response { Success = true, Data = users });
+            return Ok( users );
         }
 
         [HttpGet]
@@ -49,7 +49,7 @@ namespace Presentation.Controllers.Security
         public async Task<IActionResult> GetById(string Id)
         {
             var user = await _userService.FindByIdAsync(Id);
-            return Ok(new Response { Success = true, Data = user });
+            return Ok( user );
         }
 
         [HttpPost]
@@ -60,7 +60,7 @@ namespace Presentation.Controllers.Security
         {
             // ToDo: Handle ApplicationException (user already exists). Return 400 instead of 500
             var result = await _userService.CreateUserAsync(user);
-            return Ok(new Response { Success = true, Message = "User Created " });
+            return Ok("User Created ");
         }
 
     }
