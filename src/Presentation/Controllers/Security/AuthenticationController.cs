@@ -70,21 +70,15 @@ namespace Presentation.Controllers
         [SwaggerOperation(Summary = "Usuario Inicio Sesion",
                           Description = "Crea el token de usuario, valida si el usuario existe y si la password es correcta")]
         [SwaggerResponse(200, "Datos correctos, token genrado")]
-        [SwaggerResponse(400, "El usuario no se encuentro")]
-        [SwaggerResponse(401, "Password incorrecta")]
+        [SwaggerResponse(401, "Usuario/Password incorrecto")]
         public async Task<IActionResult> Login(AuthenticateRequest authenticationRequest)
         {
             // ToDo: Move this code to a service
             var user = await userManager.FindByNameAsync(authenticationRequest.UserName);
 
-            if (user is null)
+            if (user is null||!await userManager.CheckPasswordAsync(user, authenticationRequest.Password))
             {
-                return BadRequest(new Response() { Success = false, Message = "Usuario inválido" });
-            }
-
-            if (!await userManager.CheckPasswordAsync(user, authenticationRequest.Password))
-            {
-                return Unauthorized(new Response() { Success = false, Message = "Contraseña incorrecta" });
+                return Unauthorized("Usuario/Contraseña Incorrecto");
             }
 
             var roles = await userManager.GetRolesAsync(user);
@@ -118,7 +112,7 @@ namespace Presentation.Controllers
             var refreshToken = JwtUtils.GenerateRefreshToken(ipAddress());
             setTokenCookie(refreshToken.Token);
 
-            return Ok(new Response() { Success = true, Data = jwt });
+            return Ok(new Tokens() { Access_Token = jwt, Refresh_Token = refreshToken.Token });
         }
         /*
         [HttpPost("refresh-token")]
