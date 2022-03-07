@@ -25,13 +25,14 @@ namespace Presentation.Controllers
             _roleService = roleService;
         }
 
-        //[HttpGet]
-        //[Route("")]
-        //public IActionResult GetAll()
-        //{
-        //    var roles = _roleService.GetAll();
-        //    return Ok(roles);
-        //}
+        [HttpGet]
+        [Route("")]
+        [Authorize(Policy = "roles.view")]
+        public IActionResult GetAll()
+        {
+            var roles = _roleService.GetAll();
+            return Ok(roles);
+        }
 
         [HttpPost]
         [Route("{roleId}/claims")]

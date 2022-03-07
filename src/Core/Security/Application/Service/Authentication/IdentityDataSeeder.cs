@@ -49,7 +49,7 @@ namespace Core.Security.Application.Service.Authentication
 
         public static  void SeedRolesAndClaims(RoleManager<IdentityRole> roleManager)
         {
-            string[] adminClaims = new string[] { "user.view", "user.edit" };
+            string[] adminClaims = new string[] { "user.view", "user.edit", "roles.view" };
             IdentityRole role = roleManager.FindByNameAsync("Admin").Result;
             IList<Claim> roleClaims = new List<Claim>();
             if (role == null)
