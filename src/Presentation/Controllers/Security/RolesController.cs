@@ -27,6 +27,7 @@ namespace Presentation.Controllers
 
         [HttpGet]
         [Route("")]
+        [Authorize(Policy = "roles.view")]
         public IActionResult GetAll()
         {
             var roles = _roleService.GetAll();

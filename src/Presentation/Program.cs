@@ -46,6 +46,8 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("claims.create",
         policy => policy.RequireClaim("Permission", "claims.create"));
+    options.AddPolicy("roles.view",
+    policy => policy.RequireClaim("Permission", "roles.view"));
 });
 
 builder.Services.AddControllers();

@@ -28,6 +28,7 @@
 
   <ItemGroup>
     <Folder Include="Controllers\ProductEngineering\" />
+    <Folder Include="Endpoints\Security\" />
   </ItemGroup>
 
 </Project>
