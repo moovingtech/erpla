@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.Security.Application.Service.Mailing
+namespace Infrastructure.Common.Service.Mailing
 {
     /// <summary>
     /// ToDo:Change file location

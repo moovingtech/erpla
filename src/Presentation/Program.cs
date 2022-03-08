@@ -9,7 +9,7 @@ using Presentacion.Middleware;
 using Core.Security.Domain.Entities;
 using MinimalApi.Endpoint.Extensions;
 using Core.Security.Application.Service.Authentication;
-using Core.Security.Application.Service.Mailing;
+using Infrastructure.Common.Service.Mailing;
 using Core.Security.Application.Mappings;
 
 var builder = WebApplication.CreateBuilder(args);

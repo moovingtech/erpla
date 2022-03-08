@@ -17,7 +17,7 @@ namespace Core.Application.Service
 
         public UserService(UserManager<User> userManager)
         {
-            this._userManager = userManager;
+            _userManager = userManager;
         }
 
         public async Task<IdentityResult> CreateUserAsync(AddUserRequest user)

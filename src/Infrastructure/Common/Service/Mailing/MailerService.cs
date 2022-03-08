@@ -6,7 +6,7 @@ using MailKit.Net.Smtp;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.Security.Application.Service.Mailing
+namespace Infrastructure.Common.Service.Mailing
 {
     public interface IMailerService
     {
