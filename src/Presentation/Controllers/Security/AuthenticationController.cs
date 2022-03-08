@@ -69,7 +69,7 @@ namespace Presentation.Controllers
         [Route("login")]
         [SwaggerOperation(Summary = "Usuario Inicio Sesion",
                           Description = "Crea el token de usuario, valida si el usuario existe y si la password es correcta")]
-        [SwaggerResponse(200, "Datos correctos, token genrado")]
+        [SwaggerResponse(200, "Datos correctos, tokens generados")]
         [SwaggerResponse(401, "Usuario/Password incorrecto")]
         public async Task<IActionResult> Login(AuthenticateRequest authenticationRequest)
         {
@@ -112,7 +112,7 @@ namespace Presentation.Controllers
             var refreshToken = JwtUtils.GenerateRefreshToken(ipAddress());
             setTokenCookie(refreshToken.Token);
 
-            return Ok(new Tokens() { Access_Token = jwt, Refresh_Token = refreshToken.Token });
+            return Ok(new AuthenticateResponse() { AccessToken = jwt, RefreshToken = refreshToken.Token });
         }
         /*
         [HttpPost("refresh-token")]
