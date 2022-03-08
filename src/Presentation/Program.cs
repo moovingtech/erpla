@@ -9,6 +9,7 @@ using Presentacion.Middleware;
 using Core.Security.Domain.Entities;
 using MinimalApi.Endpoint.Extensions;
 using Core.Security.Application.Service.Authentication;
+using Core.Security.Application.Mappings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,7 +52,7 @@ builder.Services.AddAuthorization(options =>
 });
 
 builder.Services.AddControllers();
-//builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
+builder.Services.AddAutoMapper(typeof(MappingsProfile));
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(c =>
