@@ -63,7 +63,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 //mailing config
-builder.Services.Configure<SmtpConfig>(builder.Configuration.GetSection("SmtpConfig"));
+builder.Services.AddSingleton<SmtpConfig>(builder.Configuration.GetSection("SmtpConfig").Get<SmtpConfig>());
 builder.Services.AddTransient<IMailerService, MailerService>();
 
 var app = builder.Build();

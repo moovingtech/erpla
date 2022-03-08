@@ -10,9 +10,7 @@ namespace Core.Security.Application.Service.Mailing
 {
     public interface IMailerService
     {
-        MimeMessage BuildMessageFromData(EmailData emailData);
-
-        bool Send(MimeMessage message);
+        bool Send(EmailData emailData);
     }
     public class MailerService : IMailerService
     {
@@ -22,7 +20,7 @@ namespace Core.Security.Application.Service.Mailing
             _smtpConfig = config;
         }
 
-        public MimeMessage BuildMessageFromData(EmailData emailData)
+        private MimeMessage BuildMessageFromData(EmailData emailData)
         {
             MimeMessage emailMessage = new MimeMessage();
             MailboxAddress emailFrom = new MailboxAddress("Test", _smtpConfig.SmtpEmailFrom);
@@ -30,24 +28,22 @@ namespace Core.Security.Application.Service.Mailing
             MailboxAddress emailTo = new MailboxAddress(emailData.EmailToName, emailData.EmailTo);
             emailMessage.To.Add(emailTo);
             emailMessage.Subject = emailData.EmailSubject;
-            BodyBuilder emailBodyBuilder = new BodyBuilder();
-            emailBodyBuilder.TextBody = emailData.EmailBody;
-            emailMessage.Body = emailBodyBuilder.ToMessageBody();
-
+            emailMessage.Body = new TextPart("html")
+            {
+                Text = emailData.EmailBody
+            };
             return emailMessage;
         }
 
-        public bool Send(MimeMessage message)
+        public bool Send(EmailData emailData)
         {
+            var message = BuildMessageFromData(emailData);
             SmtpClient emailClient = new SmtpClient();
             try
             {
                 emailClient.Connect(_smtpConfig.SmtpServer, int.Parse(_smtpConfig.SmtpPort), _smtpConfig.SmtpUseSSL);
                 emailClient.Authenticate(_smtpConfig.SmtpUser, _smtpConfig.SmtpUserPassword);
                 emailClient.Send(message);
-                emailClient.Disconnect(true);
-                emailClient.Dispose();
-                return true;
             }
             catch
             {
@@ -58,6 +54,7 @@ namespace Core.Security.Application.Service.Mailing
                 emailClient.Disconnect(true);
                 emailClient.Dispose();
             }
+            return true;
         }
     }
 }
