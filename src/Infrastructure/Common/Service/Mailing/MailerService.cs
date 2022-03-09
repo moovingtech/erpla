@@ -5,12 +5,13 @@ using System.Linq;
 using MailKit.Net.Smtp;
 using System.Text;
 using System.Threading.Tasks;
+using Core.Domain;
 
 namespace Infrastructure.Common.Service.Mailing
 {
     public interface IMailerService
     {
-        bool Send(EmailData emailData);
+        void SendRegistrationMail(AddUserRequest user);
     }
     public class MailerService : IMailerService
     {
@@ -35,7 +36,7 @@ namespace Infrastructure.Common.Service.Mailing
             return emailMessage;
         }
 
-        public bool Send(EmailData emailData)
+        private bool Send(EmailData emailData)
         {
             var message = BuildMessageFromData(emailData);
             SmtpClient emailClient = new SmtpClient();
@@ -55,6 +56,28 @@ namespace Infrastructure.Common.Service.Mailing
                 emailClient.Dispose();
             }
             return true;
+        }
+        public void SendRegistrationMail(AddUserRequest user)
+        {
+            var emailData = new EmailData();
+            emailData.EmailSubject = "Alta Usuario";
+            emailData.EmailToName = $"{user.FirstName} {user.LastName}";
+            emailData.EmailTo = user.Email;
+            emailData.EmailBody = BuildRegistrationMailBody(user);
+            Send(emailData);
+        }
+
+        private string BuildRegistrationMailBody(AddUserRequest user)
+        {
+            string body;
+            using (StreamReader reader = new StreamReader(Directory.GetCurrentDirectory() + "/templates/Email/UserRegistred.html"))
+            {
+                body = reader.ReadToEnd();
+            }
+            body = body.Replace("{NombreyApellido}", $"{user.FirstName} {user.LastName}"); //replacing the required things  
+            body = body.Replace("{Nombre_de_usuario}", user.UserName);
+            body = body.Replace("{Contrasena}", user.Password);
+            return body;
         }
     }
 }
