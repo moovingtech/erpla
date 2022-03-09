@@ -59,11 +59,24 @@ namespace Presentation.Controllers.Security
 
             if (result.Succeeded)
             {
-               await _mailerService.SendRegistrationMail(user);
+                await _mailerService.SendRegistrationMail(user);
             }
             return Ok("User Created ");
         }
 
+        [HttpPut]
+        [Route("updatePassword")]
+        [SwaggerOperation(Summary = "Cambio de password para un usuario",
+                          Description = "cambia la password de un usuario validando la nueva password mediante las políticas aplicadas")]
+        public async Task<IActionResult> PasswordChange([FromBody] UpdatePasswordRequest req)
+        {
+            var result = await _userService.UserPasswordChange(req);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
   
         
     }
