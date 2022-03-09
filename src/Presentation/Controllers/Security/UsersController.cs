@@ -16,9 +16,6 @@ namespace Presentation.Controllers.Security
     [SwaggerTag("Sección para Administradores autenticados")]
     public class UsersController : ControllerBase
     {
-        //private readonly UserManager<User> userManager;
-        //private readonly RoleManager<IdentityRole> roleManager;
-        //private readonly IConfiguration _configuration;
         private readonly UserService _userService;
         private readonly IMailerService _mailerService;
 
@@ -54,16 +51,20 @@ namespace Presentation.Controllers.Security
                           Description = "Registra un nuevo usuario en el sistema.")]
         public async Task<IActionResult> AddUser([FromBody] AddUserRequest user)
         {
+            //Generate password for user
+            user.Password = _userService.GetRandomPassword(8);
+
             // ToDo: Handle ApplicationException (user already exists). Return 400 instead of 500
             var result = await _userService.CreateUserAsync(user);
 
-            //call to mailer service here to notify to user.
             if (result.Succeeded)
             {
                 _mailerService.SendRegistrationMail(user);
             }
-
             return Ok("User Created ");
         }
+
+  
+        
     }
 }

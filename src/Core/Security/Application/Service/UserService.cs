@@ -1,11 +1,6 @@
 ﻿using Core.Domain;
 using Core.Security.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Core.Application.Service
 {
@@ -37,7 +32,8 @@ namespace Core.Application.Service
                 SecurityStamp = Guid.NewGuid().ToString(),
                 Email = user.Email
             };
-            var identityResult = await _userManager.CreateAsync(newUser, GetRandomPassword(8);
+
+            var identityResult = await _userManager.CreateAsync(newUser, user.Password);
 
             if (identityResult.Succeeded)
             {
@@ -59,7 +55,7 @@ namespace Core.Application.Service
             //ToDo: Solve circular reference during serialization. Use AutoMapper
             return await _userManager.FindByIdAsync(id);
         }
-        private static string GetRandomPassword(int length)
+        public string GetRandomPassword(int length)
         {
             var opts = new PasswordOptions()
             {
