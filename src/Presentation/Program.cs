@@ -9,6 +9,7 @@ using Presentacion.Middleware;
 using Core.Security.Domain.Entities;
 using MinimalApi.Endpoint.Extensions;
 using Core.Security.Application.Service.Authentication;
+using Infrastructure.Common.Service.Mailing;
 using Core.Security.Application.Mappings;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -60,6 +61,10 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Api", Version = "v1" });
     c.EnableAnnotations();
 });
+
+//mailing config
+builder.Services.AddSingleton<SmtpConfig>(builder.Configuration.GetSection("SmtpConfig").Get<SmtpConfig>());
+builder.Services.AddTransient<IMailerService, MailerService>();
 
 var app = builder.Build();
 
