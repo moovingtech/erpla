@@ -59,7 +59,7 @@ namespace Presentation.Controllers.Security
 
             if (result.Succeeded)
             {
-                _mailerService.SendRegistrationMail(user);
+               await _mailerService.SendRegistrationMail(user);
             }
             return Ok("User Created ");
         }

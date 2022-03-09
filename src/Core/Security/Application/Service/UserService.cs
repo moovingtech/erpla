@@ -55,6 +55,7 @@ namespace Core.Application.Service
             //ToDo: Solve circular reference during serialization. Use AutoMapper
             return await _userManager.FindByIdAsync(id);
         }
+        
         public string GetRandomPassword(int length)
         {
             var opts = new PasswordOptions()
@@ -72,7 +73,7 @@ namespace Core.Application.Service
             "abcdefghijkmnopqrstuvwxyz",    // lowercase
             "0123456789",                   // digits
             "@$?_-"                        // non-alphanumeric
-        };
+            };
 
             Random rand = new Random(Environment.TickCount);
             List<char> chars = new List<char>();

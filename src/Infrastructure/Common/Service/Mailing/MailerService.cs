@@ -11,7 +11,7 @@ namespace Infrastructure.Common.Service.Mailing
 {
     public interface IMailerService
     {
-        void SendRegistrationMail(AddUserRequest user);
+        Task<bool> SendRegistrationMail(AddUserRequest user);
     }
     public class MailerService : IMailerService
     {
@@ -36,7 +36,7 @@ namespace Infrastructure.Common.Service.Mailing
             return emailMessage;
         }
 
-        private bool Send(EmailData emailData)
+        private async Task<bool> Send(EmailData emailData)
         {
             var message = BuildMessageFromData(emailData);
             SmtpClient emailClient = new SmtpClient();
@@ -44,7 +44,7 @@ namespace Infrastructure.Common.Service.Mailing
             {
                 emailClient.Connect(_smtpConfig.SmtpServer, int.Parse(_smtpConfig.SmtpPort), _smtpConfig.SmtpUseSSL);
                 emailClient.Authenticate(_smtpConfig.SmtpUser, _smtpConfig.SmtpUserPassword);
-                emailClient.Send(message);
+                await emailClient.SendAsync(message);
             }
             catch
             {
@@ -57,14 +57,14 @@ namespace Infrastructure.Common.Service.Mailing
             }
             return true;
         }
-        public void SendRegistrationMail(AddUserRequest user)
+        public async Task<bool> SendRegistrationMail(AddUserRequest user)
         {
             var emailData = new EmailData();
             emailData.EmailSubject = "Alta Usuario";
             emailData.EmailToName = $"{user.FirstName} {user.LastName}";
             emailData.EmailTo = user.Email;
             emailData.EmailBody = BuildRegistrationMailBody(user);
-            Send(emailData);
+          return await Send(emailData);
         }
 
         private string BuildRegistrationMailBody(AddUserRequest user)
