@@ -105,7 +105,7 @@ namespace Core.Application.Service
             return new string(chars.ToArray());
         }
 
-        public async Task<IdentityResult> UserPasswordChange(UpdatePasswordRequest request)
+        public async Task<IdentityResult> PasswordChange(UpdatePasswordRequest request)
         {
             var user = await _userManager.FindByNameAsync(request.UserName);
             if (user == null)

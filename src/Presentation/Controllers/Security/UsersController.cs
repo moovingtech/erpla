@@ -70,7 +70,7 @@ namespace Presentation.Controllers.Security
                           Description = "cambia la password de un usuario validando la nueva password mediante las políticas aplicadas")]
         public async Task<IActionResult> PasswordChange([FromBody] UpdatePasswordRequest req)
         {
-            var result = await _userService.UserPasswordChange(req);
+            var result = await _userService.PasswordChange(req);
             if (!result.Succeeded)
             {
                 return BadRequest(result);
