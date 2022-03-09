@@ -32,4 +32,10 @@
     <Folder Include="Endpoints\Security\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Templates\Email\UserRegistred.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
