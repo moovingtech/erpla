@@ -55,7 +55,7 @@ namespace Core.Application.Service
             //ToDo: Solve circular reference during serialization. Use AutoMapper
             return await _userManager.FindByIdAsync(id);
         }
-        
+
         public string GetRandomPassword(int length)
         {
             var opts = new PasswordOptions()
@@ -103,6 +103,17 @@ namespace Core.Application.Service
             }
 
             return new string(chars.ToArray());
+        }
+
+        public async Task<IdentityResult> PasswordChange(UpdatePasswordRequest request,string userName)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+            if (user == null)
+            {
+                throw new ApplicationException("User not found");
+            }
+            var result = await _userManager.ChangePasswordAsync(user, request.OldPassword,request.NewPassword);
+            return result;
         }
     }
 }
