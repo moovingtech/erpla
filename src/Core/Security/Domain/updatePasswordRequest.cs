@@ -1,3 +1,3 @@
 ﻿namespace Core.Domain;
 
-public record struct UpdatePasswordRequest(string UserName,string OldPassword,string NewPassword);
+public record struct UpdatePasswordRequest(string OldPassword,string NewPassword);
