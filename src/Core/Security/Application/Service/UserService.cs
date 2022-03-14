@@ -89,7 +89,7 @@ namespace Core.Application.Service
             for (int i = chars.Count; i < opts.RequiredLength
                 || chars.Distinct().Count() < opts.RequiredUniqueChars; i++)
             {
-                string rcs = randomChars[rand.Next(0, randomChars.Length)];
+                string rcs = randomChars[rand.Next(0, randomChars.Length - 1)];
                 chars.Insert(rand.Next(0, chars.Count),
                     rcs[rand.Next(0, rcs.Length)]);
             }

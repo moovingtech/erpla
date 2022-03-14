@@ -71,8 +71,8 @@ namespace Presentation.Controllers.Security
         public async Task<IActionResult> PasswordChange([FromBody] UpdatePasswordRequest req)
         {
             var user = HttpContext.User;
-            if (user.Identity == null) {
-                return BadRequest();
+            if (user.Identity.Name == null) {
+                return Unauthorized();
             }
             var result = await _userService.PasswordChange(req,user.Identity.Name.ToString());
             if (!result.Succeeded)

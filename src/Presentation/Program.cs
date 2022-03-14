@@ -30,7 +30,7 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequireLowercase = true;
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequireUppercase = true;
-    options.Password.RequiredLength = 6;
+    options.Password.RequiredLength = 8;
     options.Password.RequiredUniqueChars = 1;
 });
 
@@ -75,7 +75,7 @@ builder.Services.AddSwaggerGen(c =>
     {
         Name = "Authorization",
         Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer",
+        Scheme = JwtBearerDefaults.AuthenticationScheme,
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
         Description = "JWT Authorization header using the Bearer scheme."
@@ -88,7 +88,7 @@ builder.Services.AddSwaggerGen(c =>
                 Reference = new OpenApiReference
                 {
                 Type = ReferenceType.SecurityScheme,
-                Id = "Bearer"
+                Id = JwtBearerDefaults.AuthenticationScheme
                 }
             },
             new string[] {}
@@ -100,8 +100,6 @@ builder.Services.AddSwaggerGen(c =>
 //mailing config
 builder.Services.AddSingleton<SmtpConfig>(builder.Configuration.GetSection("SmtpConfig").Get<SmtpConfig>());
 builder.Services.AddTransient<IMailerService, MailerService>();
-
-builder.Services.AddScoped<AuthenticationService>();
 
 var app = builder.Build();
 
