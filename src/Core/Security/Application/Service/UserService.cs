@@ -56,17 +56,9 @@ namespace Core.Application.Service
             return await _userManager.FindByIdAsync(id);
         }
 
-        public string GetRandomPassword(int length)
+        public string GetRandomPassword()
         {
-            var opts = new PasswordOptions()
-            {
-                RequiredLength = length,
-                RequiredUniqueChars = 4,
-                RequireDigit = true,
-                RequireLowercase = true,
-                RequireNonAlphanumeric = true,
-                RequireUppercase = true
-            };
+            var opts = _userManager.Options.Password;
 
             string[] randomChars = new[] {
             "ABCDEFGHJKLMNOPQRSTUVWXYZ",    // uppercase 
@@ -97,7 +89,7 @@ namespace Core.Application.Service
             for (int i = chars.Count; i < opts.RequiredLength
                 || chars.Distinct().Count() < opts.RequiredUniqueChars; i++)
             {
-                string rcs = randomChars[rand.Next(0, randomChars.Length)];
+                string rcs = randomChars[rand.Next(0, randomChars.Length - 1)];
                 chars.Insert(rand.Next(0, chars.Count),
                     rcs[rand.Next(0, rcs.Length)]);
             }

@@ -11,6 +11,7 @@ using MinimalApi.Endpoint.Extensions;
 using Core.Security.Application.Service.Authentication;
 using Infrastructure.Common.Service.Mailing;
 using Core.Security.Application.Mappings;
+using Core.Application.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,17 @@ builder.Services
     .AddIdentityCore<User>()
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ErplaDBContext>();
+
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    // Default Password settings.
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = true;
+    options.Password.RequiredLength = 8;
+    options.Password.RequiredUniqueChars = 1;
+});
 
 builder.Services.AddRepositories()
                 .AddBusinessServices();
@@ -63,7 +75,7 @@ builder.Services.AddSwaggerGen(c =>
     {
         Name = "Authorization",
         Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer",
+        Scheme = JwtBearerDefaults.AuthenticationScheme,
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
         Description = "JWT Authorization header using the Bearer scheme."
@@ -76,7 +88,7 @@ builder.Services.AddSwaggerGen(c =>
                 Reference = new OpenApiReference
                 {
                 Type = ReferenceType.SecurityScheme,
-                Id = "Bearer"
+                Id = JwtBearerDefaults.AuthenticationScheme
                 }
             },
             new string[] {}

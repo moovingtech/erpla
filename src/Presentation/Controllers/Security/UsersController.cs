@@ -52,7 +52,7 @@ namespace Presentation.Controllers.Security
         public async Task<IActionResult> AddUser([FromBody] AddUserRequest user)
         {
             //Generate password for user
-            user.Password = _userService.GetRandomPassword(8);
+            user.Password = _userService.GetRandomPassword();
 
             // ToDo: Handle ApplicationException (user already exists). Return 400 instead of 500
             var result = await _userService.CreateUserAsync(user);
@@ -71,8 +71,8 @@ namespace Presentation.Controllers.Security
         public async Task<IActionResult> PasswordChange([FromBody] UpdatePasswordRequest req)
         {
             var user = HttpContext.User;
-            if (user == null) {
-                return BadRequest();
+            if (user.Identity.Name == null) {
+                return Unauthorized();
             }
             var result = await _userService.PasswordChange(req,user.Identity.Name.ToString());
             if (!result.Succeeded)
