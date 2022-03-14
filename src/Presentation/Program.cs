@@ -11,6 +11,7 @@ using MinimalApi.Endpoint.Extensions;
 using Core.Security.Application.Service.Authentication;
 using Infrastructure.Common.Service.Mailing;
 using Core.Security.Application.Mappings;
+using Core.Application.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -99,6 +100,8 @@ builder.Services.AddSwaggerGen(c =>
 //mailing config
 builder.Services.AddSingleton<SmtpConfig>(builder.Configuration.GetSection("SmtpConfig").Get<SmtpConfig>());
 builder.Services.AddTransient<IMailerService, MailerService>();
+
+builder.Services.AddScoped<AuthenticationService>();
 
 var app = builder.Build();
 
