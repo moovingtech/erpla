@@ -24,7 +24,7 @@ namespace Infrastructure.Common.Service.Mailing
         private MimeMessage BuildMessageFromData(EmailData emailData)
         {
             MimeMessage emailMessage = new MimeMessage();
-            MailboxAddress emailFrom = new MailboxAddress(_smtpConfig.SmtpEmailFrom, _smtpConfig.SmtpEmailFrom);
+            MailboxAddress emailFrom = new MailboxAddress(_smtpConfig.SmtpNameFrom, _smtpConfig.SmtpEmailFrom);
             emailMessage.From.Add(emailFrom);
             MailboxAddress emailTo = new MailboxAddress(emailData.EmailToName, emailData.EmailTo);
             emailMessage.To.Add(emailTo);
