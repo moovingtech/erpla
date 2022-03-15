@@ -62,7 +62,7 @@ namespace Presentation.Controllers
         [Route("refresh-token")]
         public async Task<IActionResult> RefreshToken([FromBody] TokenModel tokenModel)
         {
-            var response = _authenticationService.RefreshTokens(tokenModel);
+            var response = await _authenticationService.RefreshTokens(tokenModel);
             if (response == null)
                 return BadRequest("Invalid access token or refresh token");
 
