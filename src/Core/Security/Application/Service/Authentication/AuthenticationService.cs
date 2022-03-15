@@ -160,8 +160,8 @@ namespace Core.Application.Service
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["jwt:Key"]));
 
             var token = new JwtSecurityToken(
-                issuer: _configuration["jwt:ValidIssuer"],
-                audience: _configuration["jwt:ValidAudience"],
+                issuer: _configuration["jwt:Issuer"],
+                audience: _configuration["jwt:Audience"],
                 expires: DateTime.Now.AddMinutes(SessionTime),
                 claims: authClaims,
                 signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
