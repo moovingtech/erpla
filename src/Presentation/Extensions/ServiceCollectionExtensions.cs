@@ -36,6 +36,7 @@ namespace Presentation.Extensions
         {
             services.AddScoped<UserService>();
             services.AddScoped<RoleService>();
+            services.AddScoped<AuthenticationService>();
             return services;
         }
     }

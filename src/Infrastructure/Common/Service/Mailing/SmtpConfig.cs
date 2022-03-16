@@ -21,6 +21,8 @@ namespace Infrastructure.Common.Service.Mailing
 
         public string SmtpEmailFrom { get; set; }
 
+        public string SmtpNameFrom { get; set; }
+
         public bool SmtpUseSSL { get; set; }
     }
 }
