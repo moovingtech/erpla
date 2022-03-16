@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Core.Security.Application.Service;
+using Core.Security.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace Presentation.Extensions
 {
@@ -26,18 +28,24 @@ namespace Presentation.Extensions
             return services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
 
-        public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
+        public static void AddDatabases(this IServiceCollection services, IConfiguration configuration)
         {
-            return services.AddDbContext<ErplaDBContext>(options =>
-                     options.UseSqlServer(configuration.GetConnectionString("Default")));
+            services
+                .AddSqlServer<ErplaDBContext>(configuration.GetConnectionString("Erpla"))
+                .AddIdentityCore<User>()
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<ErplaDBContext>();
+
+            services.AddDbContext<ErplaTangoDBContext>(options =>
+                     options.UseSqlServer(configuration.GetConnectionString("ErplaTango")));
+
         }
 
-        public static IServiceCollection AddBusinessServices(this IServiceCollection services)
+        public static void AddBusinessServices(this IServiceCollection services)
         {
             services.AddScoped<UserService>();
             services.AddScoped<RoleService>();
             services.AddScoped<AuthenticationService>();
-            return services;
         }
     }
 }

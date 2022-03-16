@@ -17,11 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpoints();
 
-builder.Services
-    .AddSqlServer<ErplaDBContext>(builder.Configuration.GetConnectionString("Default"))
-    .AddIdentityCore<User>()
-    .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<ErplaDBContext>();
+builder.Services.AddDatabases(builder.Configuration);
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
@@ -61,7 +57,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("claims.create",
         policy => policy.RequireClaim("Permission", "claims.create"));
     options.AddPolicy("roles.view",
-    policy => policy.RequireClaim("Permission", "roles.view"));
+        policy => policy.RequireClaim("Permission", "roles.view"));
 });
 
 builder.Services.AddControllers();
@@ -87,8 +83,8 @@ builder.Services.AddSwaggerGen(c =>
             {
                 Reference = new OpenApiReference
                 {
-                Type = ReferenceType.SecurityScheme,
-                Id = JwtBearerDefaults.AuthenticationScheme
+                    Type = ReferenceType.SecurityScheme,
+                    Id = JwtBearerDefaults.AuthenticationScheme
                 }
             },
             new string[] {}
