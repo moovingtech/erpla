@@ -61,7 +61,7 @@ namespace Presentation.Controllers.Security
             {
                 await _mailerService.SendRegistrationMail(user);
             }
-            return Ok("User Created ");
+            return Ok(new Response() { Success = true, Message = "User Created" });
         }
 
         [HttpPut]
@@ -71,17 +71,18 @@ namespace Presentation.Controllers.Security
         public async Task<IActionResult> PasswordChange([FromBody] UpdatePasswordRequest req)
         {
             var user = HttpContext.User;
-            if (user.Identity.Name == null) {
+            if (user.Identity.Name == null)
+            {
                 return Unauthorized();
             }
-            var result = await _userService.PasswordChange(req,user.Identity.Name.ToString());
+            var result = await _userService.PasswordChange(req, user.Identity.Name.ToString());
             if (!result.Succeeded)
             {
                 return BadRequest(result);
             }
-            return Ok(result);
+            return Ok(new Response() { Success = true, Data=result));
         }
-  
-        
+
+
     }
 }
