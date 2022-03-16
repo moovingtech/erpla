@@ -80,7 +80,7 @@ namespace Presentation.Controllers.Security
             {
                 return BadRequest(result);
             }
-            return Ok(new Response() { Success = true, Data=result));
+            return Ok(new Response() { Success = true, Data = result });
         }
 
 
