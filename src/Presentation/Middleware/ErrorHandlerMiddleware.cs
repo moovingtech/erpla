@@ -1,5 +1,6 @@
 namespace Presentacion.Middleware;
 
+using Core.Application.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -63,20 +64,24 @@ public class ErrorHandlerMiddleware
         try
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_configuration["jwt:Key"]);
+            var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]);
             tokenHandler.ValidateToken(token, new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(key),
                 ValidateIssuer = false,
                 ValidateAudience = false,
-                // set clockskew to zero so tokens expire exactly at token expiration time (instead of 5 minutes later)
                 ClockSkew = TimeSpan.Zero
             }, out SecurityToken validatedToken);
+
+            var jwtToken = (JwtSecurityToken)validatedToken;
+            var accountId = jwtToken.Claims.First(x => x.Type.EndsWith("sid")).Value;
+            context.Items["UserID"] = accountId;
         }
         catch
         {
-            throw new UnauthorizedAccessException();
+            // account is not attached to context so request won't have access to secure routes
+            // do nothing if jwt validation fails
         }
     }
 }
