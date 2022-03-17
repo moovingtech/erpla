@@ -44,7 +44,7 @@ namespace Presentation.Controllers
         [SwaggerOperation(Summary = "Usuario Inicio Sesion",
                           Description = "Crea el token de usuario, valida si el usuario existe y si la password es correcta")]
         [SwaggerResponse(200, "Datos correctos, tokens generados")]
-        [SwaggerResponse(401, "Usuario/Password incorrecto")]
+        [SwaggerResponse(400, "Usuario/Password incorrecto")]
         public async Task<IActionResult> Login(AuthenticateRequest authenticationRequest)
         {
             // ToDo: Move this code to a service

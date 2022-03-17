@@ -19,7 +19,6 @@ namespace Core.Application.Service
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
-        private const int SessionTime = 15;
 
         public AuthenticationService(UserManager<User> userManage, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
         {
@@ -162,7 +161,7 @@ namespace Core.Application.Service
             var token = new JwtSecurityToken(
                 issuer: _configuration["jwt:Issuer"],
                 audience: _configuration["jwt:Audience"],
-                expires: DateTime.Now.AddMinutes(SessionTime),
+                expires: DateTime.Now.AddMinutes(int.Parse(_configuration["jwt:SessionTokenValidity"])),
                 claims: authClaims,
                 signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
                 );
