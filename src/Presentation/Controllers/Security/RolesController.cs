@@ -10,12 +10,13 @@ using Microsoft.AspNetCore.Authorization;
 using Core.Domain;
 using Core.Application.Service;
 using Core.Security.Application.Service;
+using Presentation.Helpers;
 
 namespace Presentation.Controllers
 {
     [Route("api/roles")]
     [ApiController]
-    //[Authorize(Roles = "Admin")]
+    [CustomAuthorization]
     public class RolesController : ControllerBase
     {
         private readonly RoleService _roleService;
