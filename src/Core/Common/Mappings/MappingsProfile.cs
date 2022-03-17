@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.Security.Application.Mappings
+namespace Core.Common.Mappings
 {
     public class MappingsProfile : Profile
     {

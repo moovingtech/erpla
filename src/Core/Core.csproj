@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="ProductEngeneering\Application\" />
     <Folder Include="Security\Domain\Enumeration\" />
   </ItemGroup>
 
