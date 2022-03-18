@@ -69,6 +69,26 @@ namespace Presentation.Controllers
             return Ok(response);
         }
 
+        [HttpPost]
+        [Route("logout")]
+        public async Task<IActionResult> LogOut()
+        {
+            var user = HttpContext.User;
+            if (user.Identity.Name == null)
+            {
+                return BadRequest();
+            }
+
+            var result = await _authenticationService.LogOut(user.Identity.Name.ToString());
+            if (result == null)
+            {
+                return BadRequest();
+            }
+
+            return Ok(result);
+        }
+
+
 
         /*        private void setTokenCookie(string token)
                 {
