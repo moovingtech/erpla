@@ -82,7 +82,37 @@ namespace Presentation.Controllers.Security
             }
             return Ok(new Response() { Success = true, Data = result });
         }
+        
+        [HttpPut]
+        [Route("disable-user/{userName}")]
+        [SwaggerOperation(Summary = "Inhabilitación para un usuario")]
+        public async Task<IActionResult> DisableUser(string userName) {
 
+            var result = await _userService.DisableUser(userName);
 
+            if (!result.Succeeded)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(new Response() { Success = true, Data = result });
+
+        }
+        [HttpPut]
+        [Route("enable-user/{userName}")]
+        [SwaggerOperation(Summary = "Re/Habilitación para un usuario")]
+        public async Task<IActionResult> EnableUser(string userName)
+        {
+
+            var result = await _userService.EnableUser(userName);
+
+            if (!result.Succeeded)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(new Response() { Success = true, Data = result });
+
+        }
     }
 }

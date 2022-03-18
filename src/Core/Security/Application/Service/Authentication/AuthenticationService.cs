@@ -30,7 +30,7 @@ namespace Core.Application.Service
         {
             var user = await _userManager.FindByNameAsync(request.UserName);
 
-            if (user is null || !await _userManager.CheckPasswordAsync(user, request.Password))
+            if (user is null || user.IsDisabled || !await _userManager.CheckPasswordAsync(user, request.Password))
             {
                 return null;
             }
@@ -194,7 +194,17 @@ namespace Core.Application.Service
                 throw new SecurityTokenException("Invalid token");
 
             return principal;
-
         }
+
+        public async Task<IdentityResult?> LogOut(string userName)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+            if (user == null)
+                return null;
+            user.RefreshToken = null;
+            user.RefreshTokenExpiryTime = null;
+            var result = await _userManager.UpdateAsync(user);
+            return result;
+        } 
     }
 }

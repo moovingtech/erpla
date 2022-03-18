@@ -107,5 +107,36 @@ namespace Core.Application.Service
             var result = await _userManager.ChangePasswordAsync(user, request.OldPassword, request.NewPassword);
             return result;
         }
+
+        public async Task<IdentityResult> DisableUser(string userName)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+
+            if (user == null)
+            {
+                throw new ApplicationException("User not found");
+            }
+            
+            user.IsDisabled = true;
+
+            var result = await _userManager.UpdateAsync(user);
+            
+            return result;
+        }
+        public async Task<IdentityResult> EnableUser(string userName)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+
+            if (user == null)
+            {
+                throw new ApplicationException("User not found");
+            }
+
+            user.IsDisabled = false;
+
+            var result = await _userManager.UpdateAsync(user);
+
+            return result;
+        }
     }
 }
