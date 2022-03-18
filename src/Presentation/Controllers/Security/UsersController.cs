@@ -84,7 +84,7 @@ namespace Presentation.Controllers.Security
         }
         
         [HttpPut]
-        [Route("disable-user/{userName}")]
+        [Route("{userName}/disable")]
         [SwaggerOperation(Summary = "Inhabilitación para un usuario")]
         public async Task<IActionResult> DisableUser(string userName) {
 
@@ -99,7 +99,7 @@ namespace Presentation.Controllers.Security
 
         }
         [HttpPut]
-        [Route("enable-user/{userName}")]
+        [Route("{userName}/enable")]
         [SwaggerOperation(Summary = "Re/Habilitación para un usuario")]
         public async Task<IActionResult> EnableUser(string userName)
         {
