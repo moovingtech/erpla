@@ -55,7 +55,7 @@ namespace Presentation.Controllers
             }
             //setTokenCookie(response.Value.RefreshToken);
 
-            return Ok(new Response() { Success = true, Data = response.Value });
+            return Ok(response.Value);
         }
 
         [HttpPost]
