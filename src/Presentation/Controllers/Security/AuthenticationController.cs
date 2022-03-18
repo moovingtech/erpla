@@ -51,11 +51,11 @@ namespace Presentation.Controllers
             var response = await _authenticationService.Login(authenticationRequest);
             if (response == null)
             {
-                return BadRequest("Usuario/Password incorrecto.");
+                return BadRequest(new Response(false, "Usuario/Password incorrecto."));
             }
             //setTokenCookie(response.Value.RefreshToken);
 
-            return Ok(response.Value);
+            return Ok(new Response() { Success = true, Data = response.Value });
         }
 
         [HttpPost]
@@ -64,7 +64,7 @@ namespace Presentation.Controllers
         {
             var response = await _authenticationService.RefreshTokens(tokenModel);
             if (response == null)
-                return BadRequest("Invalid access token or refresh token");
+                return BadRequest(new Response(false, "Invalid access token or refresh token"));
 
             return Ok(response);
         }
@@ -76,16 +76,16 @@ namespace Presentation.Controllers
             var user = HttpContext.User;
             if (user.Identity.Name == null)
             {
-                return BadRequest();
+                return BadRequest(new Response(false, "Usuario no encontrado"));
             }
 
             var result = await _authenticationService.LogOut(user.Identity.Name.ToString());
             if (result == null)
             {
-                return BadRequest();
+                return BadRequest(new Response(false, "Usuario no encontrado"));
             }
 
-            return Ok(result);
+            return Ok(new Response() { Success = true, Data = result});
         }
 
 
